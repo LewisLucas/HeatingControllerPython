@@ -1,0 +1,11 @@
+{% extends "HeatingApp/index.html" %}
+
+{% block content %}
+    <h2>Info Page</h2>
+    {% if time %}
+    <p>The current time is: {{ time }}<br>
+    The current temperature is: {{ temperature }}°C<br>
+    The current humidity is: {{ humidity }}%
+    </p>
+    {% endif %}
+{% endblock %}

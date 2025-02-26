@@ -1,0 +1,17 @@
+{% extends "HeatingApp/index.html" %}
+
+{% block content %}
+    <h2>Edit Timer</h2>
+    <p>Current timer id: {{ timer.id }}</p>
+    <form>
+        {% csrf_token %}
+        <label for="old_start_time">Start Time:</label>
+        <p id="old_start_time">{{ timer.formatted_start_time }}</p>
+        <label for="start_time">New Start Time:</label>
+        <input type="datetime-local" id="start_time" name="start_time" value=""><br><br>
+        <label for="old_end_time">End Time:</label>
+        <p id="old_end_time">{{ timer.formatted_end_time }}</p>
+        <label for="end_time">New End Time:</label>
+        <input type="datetime-local" id="end_time" name="end_time" value=""><br>
+    </form>
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends "HeatingApp/index.html" %}
+
+{% block content %}
+    <h2>Timers Page</h2>
+
+    {% if timers %}
+        {% for timer in timers %}
+        <p>Timer {{ forloop.counter }}:<br> {{ timer.formatted_start_time }} - {{ timer.formatted_end_time }} <br><a href="{% url 'HeatingApp:delete_timer' timer.id %}">Delete</a></p>
+        <a href="{% url 'HeatingApp:create_timer' %}">Add a timer</a>
+        {% endfor %}
+    {% else %}
+        <p>No timers set</p>
+        <a href="{% url 'HeatingApp:create_timer' %}">Add a timer</a>
+    {% endif %}
+    
+{% endblock %}
