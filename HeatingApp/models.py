@@ -8,6 +8,7 @@ class Info(models.Model):
     temperature = models.FloatField(default=21)
     humidity = models.FloatField(default=50)
     target_temperature = models.FloatField(default=10)
+    power = models.BooleanField(default=True)
 
     def __str__(self):
         return f"{self.time} - {self.temperature} - {self.humidity} - {self.target_temperature}"

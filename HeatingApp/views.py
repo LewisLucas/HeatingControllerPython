@@ -80,7 +80,7 @@ def create_timer_form(request):
     return HttpResponse("""
 <html>
     <head>
-        <meta http-equiv="refresh" content="2;url=/heating_app/timers/" />
+        <meta http-equiv="refresh" content="1;url=/heating_app/timers/" />
     </head>
     <body>
         <p>Timer Created successfully! You will be redirected shortly.</p>
@@ -94,7 +94,7 @@ def delete_timer(request, pk):
     return HttpResponse("""
 <html>
     <head>
-        <meta http-equiv="refresh" content="2;url=/heating_app/timers/" />
+        <meta http-equiv="refresh" content="1;url=/heating_app/timers/" />
     </head>
     <body>
         <p>Timer Deleted successfully! You will be redirected shortly.</p>

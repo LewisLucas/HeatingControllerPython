@@ -5,12 +5,11 @@
 
     {% if timers %}
         {% for timer in timers %}
-        <p>Timer {{ forloop.counter }}:<br> {{ timer.formatted_start_time }} - {{ timer.formatted_end_time }} <br><a href="{% url 'HeatingApp:delete_timer' timer.id %}">Delete</a></p>
-        <a href="{% url 'HeatingApp:create_timer' %}">Add a timer</a>
+        <p>Timer {{ forloop.counter }}:<br> {{ timer.formatted_start_time }} - {{ timer.formatted_end_time }} {% if timer.active %} <span style="color: brown; font-weight: bold;">- Active</span> {% endif %} <br><a href="{% url 'HeatingApp:delete_timer' timer.id %}">Delete</a></p>
         {% endfor %}
     {% else %}
         <p>No timers set</p>
-        <a href="{% url 'HeatingApp:create_timer' %}">Add a timer</a>
     {% endif %}
+    <a href="{% url 'HeatingApp:create_timer' %}">Add a timer</a>
     
 {% endblock %}
