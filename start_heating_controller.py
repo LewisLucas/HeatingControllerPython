@@ -2,6 +2,7 @@
 import sqlite3
 import datetime
 import time as t
+import requests
 
 
 def create_info_if_not_exists():
@@ -50,9 +51,9 @@ def set_power(power):
 
 def send_signal(state):
     if state == "on":
-        print("Turning on")
+        requests.get(f"{url}/on")
     else:
-        print("Turning off")
+        requests.get(f"{url}/off")
 
 def get_timers():
     conn = sqlite3.connect(db_path)
@@ -117,6 +118,7 @@ def maintain_temperature(temperature, target_temperature):
         send_signal("off")
 # path to the database
 db_path = 'db.sqlite3'
+url = "192.168.0.87:665"
 create_info_if_not_exists()
 
 # signal delay timer in minutes to not send too many signals
