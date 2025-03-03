@@ -116,9 +116,9 @@ def delete_timer(request, pk):
 </html>
                         """)
 
-def update_current_temperature(request, temperature, hummidity):
+def update_current_temperature(request, humidity, temperature):
     i = Info.objects.get(pk=1)
     i.temperature = temperature
-    i.humidity = hummidity
+    i.humidity = humidity    
     i.save()
     return HttpResponse()

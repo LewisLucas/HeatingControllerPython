@@ -25,7 +25,8 @@ def get_info():
     humidity = info[3]
     target_temperature = info[4]
     power = info[5]
-    return time, temperature, humidity, target_temperature, power
+    updated = info[6]
+    return time, temperature, humidity, target_temperature, power, updated
 
 def update_current_temperature_and_humidity(humidity, temperature):
     conn = sqlite3.connect(db_path)
@@ -51,9 +52,15 @@ def set_power(power):
 
 def send_signal(state):
     if state == "on":
-        requests.get(f"{url}/on")
+        try:
+            print(requests.get(f"{url}/on"))
+        except:
+            print("Error sending signal")
     else:
-        requests.get(f"{url}/off")
+        try:
+            print(requests.get(f"{url}/off"))
+        except:
+            print("Error sending signal")
 
 def get_timers():
     conn = sqlite3.connect(db_path)
@@ -118,7 +125,7 @@ def maintain_temperature(temperature, target_temperature):
         send_signal("off")
 # path to the database
 db_path = 'db.sqlite3'
-url = "192.168.0.87:665"
+url = "http://192.168.0.87"
 create_info_if_not_exists()
 
 # signal delay timer in minutes to not send too many signals
@@ -154,4 +161,4 @@ while True:
         else:
             print("Delaying signal")
             continue
-    t.sleep(1)
+    t.sleep(10)
