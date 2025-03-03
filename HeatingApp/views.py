@@ -52,10 +52,24 @@ class CreateTimerView(generic.ListView):
         return
     
 def update_target_temperature(request):
+    active_timer = Timer.objects.filter(active=True).exists()
+    if active_timer:
+        return HttpResponse("""
+<html>
+    <head>
+        <meta http-equiv="refresh" content="2;url=/heating_app" />
+    </head>
+    <body>
+        <p>Cannot update target temperature while a timer is active. You will be redirected shortly.</p>
+    </body>
+</html>
+                        """)
+
     if request.method != "POST":
         return render(request, 'HeatingApp/index.html', {})
     i = Info.objects.get(pk=1)
     i.target_temperature = request.POST["set-temperature"]
+    i.updated = True
     i.save()
     return HttpResponse("""
 <html>
@@ -101,3 +115,10 @@ def delete_timer(request, pk):
     </body>
 </html>
                         """)
+
+def update_current_temperature(request, temperature, hummidity):
+    i = Info.objects.get(pk=1)
+    i.temperature = temperature
+    i.humidity = hummidity
+    i.save()
+    return HttpResponse()

@@ -4,6 +4,14 @@ import datetime
 import time as t
 
 
+def create_info_if_not_exists():
+    # if the info table is empty create an entry
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM HeatingApp_info")
+    if not cursor.fetchone():
+        cursor.execute("INSERT INTO HeatingApp_info VALUES (1, '2021-01-01 00:00:00', 21, 50, 10, 1, 0)")
+
 def get_info():
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
@@ -16,13 +24,27 @@ def get_info():
     humidity = info[3]
     target_temperature = info[4]
     power = info[5]
-
     return time, temperature, humidity, target_temperature, power
 
-def update_current_temperate(temperature):
+def update_current_temperature_and_humidity(humidity, temperature):
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
     cursor.execute(f"UPDATE HeatingApp_info SET temperature = {temperature} WHERE id = 1")
+    cursor.execute(f"UPDATE HeatingApp_info SET humidity = {humidity} WHERE id = 1")
+    conn.commit()
+    conn.close()
+
+def set_target_temperature(target_temperature):
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+    cursor.execute(f"UPDATE HeatingApp_info SET target_temperature = {target_temperature} WHERE id = 1")
+    conn.commit()
+    conn.close()
+
+def set_power(power):
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+    cursor.execute(f"UPDATE HeatingApp_info SET power = {power} WHERE id = 1")
     conn.commit()
     conn.close()
 
@@ -76,34 +98,58 @@ def get_active_timer():
     cursor.execute("SELECT * FROM HeatingApp_timer WHERE active = 1")
     timer = cursor.fetchone()
     conn.close()
-    return timer
+    if timer:
+        return timer
+    else:
+        return None
+    
+def clear_updated():
+    conn = sqlite3.connect(db_path) 
+    cursor = conn.cursor()
+    cursor.execute("UPDATE HeatingApp_info SET updated = 0 WHERE id = 1")
+    conn.commit()
+    conn.close()
+    
+def maintain_temperature(temperature, target_temperature):
+    if temperature < target_temperature:
+        send_signal("on")
+    else:
+        send_signal("off")
+# path to the database
+db_path = 'db.sqlite3'
+create_info_if_not_exists()
 
+# signal delay timer in minutes to not send too many signals
+signal_delay = 5
+signal_delay_ignore = True
+last_signal = datetime.datetime.now()
 while True:
-    # path to the database
-    db_path = 'db.sqlite3'
-
-    # try to get the info from the database
-    try:
-        time, temperature, humidity, target_temperature, power = get_info()
-    except:
-        print("Error getting info")
-        continue
-
+    # Wait for the power to be on else just loop infinitely
+    power = get_info()[5]
     while power:
-        t.sleep(1) # sleep for 1 second
         try:
-            time, temperature, humidity, target_temperature, power = get_info()
+            time, temperature, humidity, target_temperature, power, updated = get_info()
         except:
             print("Error getting info")
             continue
 
         delete_old_timers()
         check_and_activate_timers()
+        timer = get_active_timer()
+        if timer:
+            if timer[4] != target_temperature:
+                set_target_temperature(timer[4])
+                print(f"Changed target temperature to {timer[4]}")
+        
+        if updated:
+            clear_updated()
+            signal_delay_ignore = True
 
-
-
-
-
-
-
-
+        if (datetime.datetime.now() - last_signal).seconds > signal_delay * 60 or signal_delay_ignore:
+            maintain_temperature(temperature, target_temperature)
+            last_signal = datetime.datetime.now()
+            signal_delay_ignore = False
+        else:
+            print("Delaying signal")
+            continue
+    t.sleep(1)

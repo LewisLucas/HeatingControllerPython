@@ -9,6 +9,7 @@ class Info(models.Model):
     humidity = models.FloatField(default=50)
     target_temperature = models.FloatField(default=10)
     power = models.BooleanField(default=True)
+    updated = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.time} - {self.temperature} - {self.humidity} - {self.target_temperature}"

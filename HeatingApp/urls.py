@@ -13,4 +13,5 @@ urlpatterns = [
     path("create_timer/", views.CreateTimerView.as_view(), name="create_timer"),
     path("create_timer_form/", views.create_timer_form, name="create_timer_form"),
     path("delete_timer/<int:pk>/", views.delete_timer, name="delete_timer"),
+    path("update_current_temperature/<int:temperature>/<int:humidity>", views.update_current_temperature, name="update_current_temperature"),
 ]
